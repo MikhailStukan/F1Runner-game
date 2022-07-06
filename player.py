@@ -12,15 +12,13 @@ class Player(Sprite):
         self.acceleration = .01
         self.min_turnspeed = .1
         self.max_turnspeed = .5
+        self.road_width = 5.0
         self.speed = self.min_speed
         self.turnspeed = self.min_turnspeed
         self.texture = 'resources/sprites/player.png'
         self.model = 'quad'
         self.name = "player"
         self.score = 0
-        self.x = 0
-        self.y = 0
-        self.z = 0
         self.scale = 3
         self.life = 3
         self.maxlife = 3
@@ -58,14 +56,30 @@ class Player(Sprite):
 
 
     # deriving coordinates from the speed and changing x-axis from the turnspeed
+    # border on the right and left of the road 
+
 
     def move(self):
+
+        # increasing y coordinate based on speed
+
         self.y += self.speed
-        self.x += held_keys['d'] * self.turnspeed
-        self.x += held_keys['right arrow'] * self.turnspeed
-        self.x -= held_keys['a'] * self.turnspeed
-        self.x -= held_keys['left arrow'] * self.turnspeed
-        self.rotation
+
+        # checking for road width so player doen't go out of the screen
+
+        if (self.x > self.road_width):
+            self.x = self.road_width
+        if (self.x < -self.road_width):
+            self.x = -self.road_width
+
+        else:
+            # handling turning of the player based on the turnspeed
+            
+            self.x += held_keys['d'] * self.turnspeed
+            self.x += held_keys['right arrow'] * self.turnspeed
+            self.x -= held_keys['a'] * self.turnspeed
+            self.x -= held_keys['left arrow'] * self.turnspeed
+
 
     # changing speed and turnspeed when the keys are pressed (acceleration) and deceleration
 

@@ -11,8 +11,28 @@ class MainMenu(Entity):
             parent = camera.ui)
         
         self.player = player
-        self.main_menu = Entity(parent = self, enabled = True)
+        self.main_menu = Entity(parent = self, enabled = False)
         self.isGameStarted = isGameStarted
+
+        
+
+# saving player name
+
+        def save_name():
+            
+            #getting entered name
+            
+            entered_name = enter_name.content[0].text
+
+            if(entered_name == ""):
+                entered_name = "Player"
+            else:
+                self.player.name = entered_name
+            enter_name.enabled = False
+            self.main_menu.enabled = True
+
+
+
 
 # closing leaderboard window
 
@@ -32,24 +52,38 @@ class MainMenu(Entity):
             title = 'Leaderboard',
             position = (0, 0.35), # position of the window
             content = (
-              Text(text = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n"), # empty text to make space for leaderboard texts
+              Space(height = 10),
               Button(text = 'Exit', color = color.azure, on_click = close_leaderboard),
          ),
             popup = True,
             enabled = False
         ) 
+
+# enter player name panel
+
+        enter_name = WindowPanel(
+            title = 'Enter your name',
+            position = (0, -0.1), # position of the window
+            content = (
+                InputField(name = 'InputName', text = '', placeholder = 'Enter your name'),
+                Button(text = 'Submit', color = color.azure, on_click = save_name),
+        ),
+            popup = True,
+            enabled = True
+        )
         
         # leaderboard texts - 5 places for first 5 players
 
-        self.leaderboard_1 = Text(text = "", color = color.white, font_size = 20, parent = leaderBoard.content, origin = 0, y = 0.2)
-        self.leaderboard_2 = Text(text = "", color = color.white, font_size = 20, parent = leaderBoard.content, origin = 0, y = 0.1)
-        self.leaderboard_3 = Text(text = "", color = color.white, font_size = 20, parent = leaderBoard.content, origin = 0, y = 0)
-        self.leaderboard_4 = Text(text = "", color = color.white, font_size = 20, parent = leaderBoard.content, origin = 0, y = -0.1)
-        self.leaderboard_5 = Text(text = "", color = color.white, font_size = 20, parent = leaderBoard.content, origin = 0, y = -0.2)
+        self.leaderboard_1 = Text(text = "", color = color.white, font_size = 20, parent = leaderBoard.content, origin = 0, y = 0.25)
+        self.leaderboard_2 = Text(text = "", color = color.white, font_size = 20, parent = leaderBoard.content, origin = 0, y = 0.15)
+        self.leaderboard_3 = Text(text = "", color = color.white, font_size = 20, parent = leaderBoard.content, origin = 0, y = 0.05)
+        self.leaderboard_4 = Text(text = "", color = color.white, font_size = 20, parent = leaderBoard.content, origin = 0, y = -0.05)
+        self.leaderboard_5 = Text(text = "", color = color.white, font_size = 20, parent = leaderBoard.content, origin = 0, y = -0.15)
         
         # list of texts
 
         self.leaderboard_texts = [self.leaderboard_1, self.leaderboard_2, self.leaderboard_3, self.leaderboard_4, self.leaderboard_5]
+
 
 
 # load scores from file into dictionary 
@@ -93,7 +127,6 @@ class MainMenu(Entity):
 # displaying leaderboard
 
         def display_leaderboard():
-           load_scores(self)
            fill_leaderboard(self)
            self.leaderboard_1.enabled = True
            self.leaderboard_2.enabled = True
@@ -137,3 +170,4 @@ class MainMenu(Entity):
         quit_button = Button(text = "Quit", color = color.black, scale_y = 0.1, scale_x = 0.3, y = -0.22, parent = self.main_menu)
         quit_button.on_click = application.quit
         leader_button.on_click = Func(display_leaderboard)
+        load_scores(self)
