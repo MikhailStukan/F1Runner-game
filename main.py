@@ -1,12 +1,10 @@
-from os import remove
 from ursina import *
-from cars import Pickup
 
 # Importing components
 
 from player import Player
 from mainmenu import MainMenu
-from cars import *
+from cars import Pickup, Sedan, Truck
 from endmenu import Endmenu
 
 app = Ursina()
@@ -21,13 +19,12 @@ window.fullscreen = False
 window.borderless = False
 window.exit_button.visible = False
 window.fps_counter.enabled = False
-window.vsync = True
+window.vsync = 60
 window.color = color.rgb(0,94,184)
 window.icon = load_texture('resources/sprites/player.png')
 
-
-y = -20
-roads_length = 28.7
+Y = -20
+ROADS_LENGTH = 28.7
 
 # Sounds
 
@@ -44,17 +41,16 @@ cars = []
 
 def new_cars(x, ys):
 
-    #spawn three variation of cars Pickup or Sedan or Truck
+    #spawn three variation of cars Pickup or Sedan or Truck on coordinates x and ys
 
     if random.randint(0, 1) == 0:
-        new = Pickup(x, ys, speed = random.uniform(0.1, 0.2))
+        new = Pickup(x, ys)
     elif random.randint(0, 1) == 0:
-        new = Sedan(x, ys, speed = random.uniform(0.1, 0.3))
+        new = Sedan(x, ys)
     else:
-        new = Truck(x, ys, speed = random.uniform(0.05, 0.1))
+        new = Truck(x, ys)
 
     cars.append(new)
-
 
 # creating new road at coordinates y
 
@@ -83,8 +79,8 @@ def removeCars(yx):
 # create initial 4 road sprites forward of the player
 
 for x in range(0, 4):
-    newRoad(y)
-    y += roads_length # legth of one road sprite
+    newRoad(Y)
+    Y += ROADS_LENGTH # legth of one road sprite
 
 #creating player
 
@@ -93,19 +89,20 @@ player = Player()
 #deleting not visible roads and cars after player
 
 def clean():
-    if player.y >= roads[0].y + roads_length:
-        removeRoad(roads[0].y + roads_length)
-        removeCars(roads[0].y + roads_length)
+    if player.y >= roads[0].y + ROADS_LENGTH:
+        removeRoad(roads[0].y + ROADS_LENGTH)
+        removeCars(roads[0].y + ROADS_LENGTH)
 
 #adding new roads and cars before player reaches the end of the screen and increasing player score by 1 for each road (WIP?) 
 
 def add():
-        if player.y >= roads[-1].y - roads_length - player.speed:
-            newRoad(roads[-1].y + roads_length)
-            new_cars(random.uniform(-6, 6), roads[-1].y + roads_length)
+        if player.y >= roads[-1].y - ROADS_LENGTH - (player.max_speed + player.speed):
+            newRoad(roads[-1].y + ROADS_LENGTH)
+            new_cars(random.uniform(-5.5, 5.5), roads[-1].y + ROADS_LENGTH)
             player.score += 1
 
 # Main Menu
+
 mainmenu = MainMenu(player, False)
 
 #displaying lifes in hearts
@@ -115,7 +112,6 @@ for i in range(player.life):
     heart = Sprite(texture = hearth_texture, scale = 0.3, x = -0.80 + (i/10), y = 0.40, parent = camera.ui)
     hearts.append(heart)
     heart.always_on_top = True
-
 
 # Displaying current speed and score
 
@@ -129,16 +125,9 @@ if (player.enabled == False):
     engine_sound.play()
 
 
-#updating game
+# function for displaying hearts according to amount of lifes (player)
 
-def update():
-    if(player.enabled == True):
-        engine_sound.pause()
-
-    #health_text.text = "Lifes: " + str(player.life)
-
-    #displaying hearts according to amount of lifes (player)
-
+def updating_hearts():
     if len(hearts) > player.life:
         difference = len(hearts) - player.life
         if difference == 1:
@@ -147,16 +136,25 @@ def update():
             for i in range(difference):
                 hearts[-1].visible = False
                 hearts.pop()
-        
+
+#updating game state
+
+def update():
+    if(player.enabled == True):
+        engine_sound.pause()
+
+    #updating hearts
+
+    updating_hearts()
 
     # updating speed and score
 
     score_text.text = "Score: " + str(player.score)
-    speed_text.text = "Speed: " + str(int(player.speed * 200)) + "km/h"
+    speed_text.text = "Speed: " + str(int(player.speed * 350)) + "km/h"
 
     # moving camera with player
 
-    camera.y = player.y + 20
+    camera.y = player.y + 15
 
     # cleaning memory (deleting roads and cars)
 
@@ -166,7 +164,6 @@ def update():
 
     add()
     
-
     # isAlive check for calling endmenu if lifes = 0
 
     if(player.isAlive == False):
@@ -174,32 +171,23 @@ def update():
         end_menu = Endmenu(player)
         mouse.locked = False
 
-    
-
-           
-
-
 # Pause manager
 
 pause_handler = Entity(ignore_paused = True)
 
-
 # Pause/unpause the game.
 
 def pause_handler_input(key):
-    if key == "escape" and not application.paused and player.enabled == True:
+    if key == "escape" and not application.paused and player.enabled and player.isAlive:
         resumemenu = MainMenu(player, True)
+        resumemenu.main_menu.enabled = True
         mouse.locked = False
         engine_sound.pause()
         application.pause()
     
-
-
-
 # Assign the input function to the pause handler.
 
 pause_handler.input = pause_handler_input
-
 
 # Running the app
 

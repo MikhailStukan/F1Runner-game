@@ -69,7 +69,7 @@ class MainMenu(Entity):
                 Button(text = 'Submit', color = color.azure, on_click = save_name),
         ),
             popup = True,
-            enabled = True
+            enabled = False
         )
         
         # leaderboard texts - 5 places for first 5 players
@@ -107,6 +107,7 @@ class MainMenu(Entity):
             self.main_menu.enabled = False
             self.player.position = (0, 0, 0)
             self.isGameStarted = True
+            enter_name.enabled = False
 
 # fill leaderboard_texts with names and scores from dictionary
 
@@ -150,13 +151,12 @@ class MainMenu(Entity):
             self.isGameStarted = True
             mouse.locked = True
 
+        load_scores(self)
         # if game is not started
-
         if(self.isGameStarted == False):
             start_button = Button(text = "Start the race", color = color.black, scale_y = 0.1, scale_x = 0.3, y = 0.02, parent = self.main_menu)
             start_button.on_click = Func(start)
-
-        # if
+            enter_name.enabled = True
         else:
             resume_button = Button(text = "Resume game", color = color.black, scale_y = 0.1, scale_x = 0.3, y = 0.02, parent = self.main_menu)
             resume_button.on_click = Func(resume)
@@ -170,4 +170,4 @@ class MainMenu(Entity):
         quit_button = Button(text = "Quit", color = color.black, scale_y = 0.1, scale_x = 0.3, y = -0.22, parent = self.main_menu)
         quit_button.on_click = application.quit
         leader_button.on_click = Func(display_leaderboard)
-        load_scores(self)
+       

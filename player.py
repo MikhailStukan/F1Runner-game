@@ -46,18 +46,27 @@ class Player(Sprite):
         hit_info = self.intersects()
 
         if hit_info.hit and hit_info.entity.name == "car":
+
             # handle collision with car and taking damage
+
             self.take_damage(int(hit_info.entity.health))
+            
+            # shake effect on collision, WIP
+
+            self.shake()
+
             # destroying car which was hit
+
             hit_info.entity.destroy()
+
             # reduction amount of score for hitting car, that is based on the health of the car
+
             self.add_score(int(hit_info.entity.health * -1))
             
 
 
     # deriving coordinates from the speed and changing x-axis from the turnspeed
     # border on the right and left of the road 
-
 
     def move(self):
 

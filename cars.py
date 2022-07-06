@@ -1,5 +1,4 @@
 from ursina import *
-
 # car class inhterited from Sprite class
 
 class Cars(Sprite):
@@ -14,14 +13,19 @@ class Cars(Sprite):
         self.scale = 3.5
         self.enabled = True
         self.always_on_top = True
-
+        self.min_speed = 0.1
+        self.max_speed = 0.7
     # disable rendering 
 
     def destroy(self):
         self.enabled = False
 
     def update(self):
-        self.y -= self.speed
+        self.y -= self.random_speed()
+
+    def random_speed(self):
+        self.speed = random.uniform(self.min_speed, self.max_speed)
+        return self.speed
 
 # pickup 
 
@@ -32,7 +36,7 @@ class Pickup(Cars):
         self.y = y
         self.texture = 'resources/sprites/pickup_green.png'
         self.health = 2
-        self.speed = 0.05
+        self.max_speed = 0.5
 
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -45,7 +49,7 @@ class Sedan(Cars):
         super().__init__(x, y)
         self.texture = 'resources/sprites/sedan_yellow.png'
         self.health = 1
-        self.speed = 0.1
+        self.max_speed = 0.7
 
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -59,7 +63,7 @@ class Truck(Cars):
         super().__init__(x, y)
         self.texture = 'resources/sprites/Truck.png',
         self.health = 3
-        self.speed = 0.02
+        self.max_speed = 0.3
 
         for key, value in kwargs.items():
             setattr(self, key, value)
