@@ -61,7 +61,7 @@ def new_cars(x, ys):
 roads = []
 
 def newRoad(y):
-    new = Sprite(model = 'quad', texture = 'resources/sprites/road_0.png', scale = 1.5, x = 0, y = y, z = 0)
+    new = Sprite(name = "road", model = 'quad', texture = 'resources/sprites/road_0.png', scale = 1.5, x = 0, y = y, z = 0)
     roads.append(new)
 
 # remove road at coordinates y
@@ -110,6 +110,7 @@ mainmenu = MainMenu(player, False)
 
 #displaying lifes in hearts
 hearts = []
+
 for i in range(player.life):
     heart = Sprite(texture = hearth_texture, scale = 0.3, x = -0.80 + (i/10), y = 0.40, parent = camera.ui)
     hearts.append(heart)
@@ -139,7 +140,13 @@ def update():
     #displaying hearts according to amount of lifes (player)
 
     if len(hearts) > player.life:
-        hearts[player.life].enabled = False
+        difference = len(hearts) - player.life
+        if difference == 1:
+            hearts[-1].visible = False
+        else:
+            for i in range(difference):
+                hearts[-1].visible = False
+                hearts.pop()
         
 
     # updating speed and score

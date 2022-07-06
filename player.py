@@ -43,11 +43,19 @@ class Player(Sprite):
             self.disable()
             self.isAlive = False
         
+        # collider check
+
         hit_info = self.intersects()
-        if hit_info.hit:
-            if(self.life > 0):
-                self.take_damage(1)
-                hit_info.entity.destroy()
+
+        if hit_info.hit and hit_info.entity.name == "car":
+            # handle collision with car and taking damage
+            self.take_damage(int(hit_info.entity.health))
+            # destroying car which was hit
+            hit_info.entity.destroy()
+            # reduction amount of score for hitting car, that is based on the health of the car
+            self.add_score(int(hit_info.entity.health * -1))
+            
+
 
     # deriving coordinates from the speed and changing x-axis from the turnspeed
 
@@ -87,10 +95,16 @@ class Player(Sprite):
     def add_score(self, score):
         self.score += score
 
-    # damage player for X of damage
+    # damage player for X of damage, checking for enough lifes
 
     def take_damage(self, damage):
-        self.life -= damage
+        if self.life - damage > 0:
+            self.life -= damage
+        else:
+            self.life = 0
+            self.disable()
+            self.isAlive = False
+        
 
     # adding x life
 

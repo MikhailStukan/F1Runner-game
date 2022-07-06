@@ -3,14 +3,14 @@ from ursina import *
 # car class inhterited from Sprite class
 
 class Cars(Sprite):
-    def __init__(self):
+    def __init__(self, x , y):
         super().__init__(
             collider = 'box',
+            name = 'car',
         )
         self.model = 'quad',
-        self.x = 0,
-        self.y = 0,
-        self.z = 0,
+        self.x = x
+        self.y = y
         self.scale = 3.5
         self.enabled = True
         self.always_on_top = True
@@ -27,10 +27,11 @@ class Cars(Sprite):
 
 class Pickup(Cars):
     def __init__(self, x, y, **kwargs):
-        super().__init__()
-        self.texture = 'resources/sprites/pickup_green.png'
+        super().__init__(x, y)
         self.x = x
         self.y = y
+        self.texture = 'resources/sprites/pickup_green.png'
+        self.health = 2
         self.speed = 0.05
 
         for key, value in kwargs.items():
@@ -41,10 +42,9 @@ class Pickup(Cars):
 
 class Sedan(Cars):
     def __init__(self, x, y, **kwargs):
-        super().__init__()
+        super().__init__(x, y)
         self.texture = 'resources/sprites/sedan_yellow.png'
-        self.x = x
-        self.y = y
+        self.health = 1
         self.speed = 0.1
 
         for key, value in kwargs.items():
@@ -56,10 +56,9 @@ class Sedan(Cars):
 
 class Truck(Cars):
     def __init__(self, x, y, **kwargs):
-        super().__init__()
+        super().__init__(x, y)
         self.texture = 'resources/sprites/Truck.png',
-        self.x = x
-        self.y = y
+        self.health = 3
         self.speed = 0.02
 
         for key, value in kwargs.items():
