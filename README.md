@@ -29,7 +29,23 @@ Infinite runner game made with Python and using Ursina game engine.
 * Python 3
 * Ursina
 
+# Installation
+
+* Install Ursina
+
+```
+pip install ursina 
+```
+
+* And then run
+
+```
+python main.py
+```
+
+
 # Assets
 
 * Free assets from opengameart.org
+
 
