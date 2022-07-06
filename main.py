@@ -25,7 +25,7 @@ window.vsync = True
 window.color = color.rgb(0,94,184)
 window.icon = load_texture('resources/sprites/player.png')
 
-roads = []
+
 y = -20
 roads_length = 28.7
 
@@ -38,29 +38,33 @@ race_sound = Audio('resources/sounds/car_acceleration.wav', loop = True, autopla
 
 hearth_texture = load_texture('resources/sprites/heart.png')
 
-# creating roads
+#spawning cars
 
 cars = []
 
-#spawning cars
-
 def new_cars(x, ys):
-    #spawn three variation of objects Pickup or Sedan or Truck
+
+    #spawn three variation of cars Pickup or Sedan or Truck
+
     if random.randint(0, 1) == 0:
         new = Pickup(x, ys, speed = random.uniform(0.1, 0.2))
     elif random.randint(0, 1) == 0:
         new = Sedan(x, ys, speed = random.uniform(0.1, 0.3))
     else:
         new = Truck(x, ys, speed = random.uniform(0.05, 0.1))
+
     cars.append(new)
 
 
+# creating new road at coordinates y
+
+roads = []
 
 def newRoad(y):
     new = Sprite(model = 'quad', texture = 'resources/sprites/road_0.png', scale = 1.5, x = 0, y = y, z = 0)
     roads.append(new)
 
-# remove road
+# remove road at coordinates y
 
 def removeRoad(yx):
     for road in roads:
@@ -68,11 +72,14 @@ def removeRoad(yx):
             roads.remove(road)
             break
 
+# remove car at coordinates y
+
 def removeCars(yx):
     for car in cars:
         if car.y <= yx:
             cars.remove(car)
             break
+
 # create initial 4 road sprites forward of the player
 
 for x in range(0, 4):
@@ -80,6 +87,7 @@ for x in range(0, 4):
     y += roads_length # legth of one road sprite
 
 #creating player
+
 player = Player()
 
 #deleting not visible roads and cars after player
@@ -92,7 +100,7 @@ def clean():
 #adding new roads and cars before player reaches the end of the screen and increasing player score by 1 for each road (WIP?) 
 
 def add():
-        if player.y >= roads[-1].y - roads_length:
+        if player.y >= roads[-1].y - roads_length - player.speed:
             newRoad(roads[-1].y + roads_length)
             new_cars(random.uniform(-6, 6), roads[-1].y + roads_length)
             player.score += 1
@@ -100,16 +108,15 @@ def add():
 # Main Menu
 mainmenu = MainMenu(player, False)
 
-# Displaying amount of lifes and score
-
-#health_text = Text(text= "Lifes: " + str(player.life), size = 0.05, x = -0.85, y = 0.48)
-
 #displaying lifes in hearts
 hearts = []
 for i in range(player.life):
     heart = Sprite(texture = hearth_texture, scale = 0.3, x = -0.80 + (i/10), y = 0.40, parent = camera.ui)
     hearts.append(heart)
     heart.always_on_top = True
+
+
+# Displaying current speed and score
 
 speed_text = Text(text = "Speed: " + str(int(player.speed * 200)) + "km/h", size = 0.05, x = -0.85, y = 0.30)
 score_text = Text(text= "Score: " + str(player.score), size = 0.05, x = -0.85, y = 0.20)
@@ -129,17 +136,32 @@ def update():
 
     #health_text.text = "Lifes: " + str(player.life)
 
-    #displaying hearts
+    #displaying hearts according to amount of lifes (player)
+
     if len(hearts) > player.life:
         hearts[player.life].enabled = False
         
+
+    # updating speed and score
+
     score_text.text = "Score: " + str(player.score)
     speed_text.text = "Speed: " + str(int(player.speed * 200)) + "km/h"
 
+    # moving camera with player
+
     camera.y = player.y + 20
+
+    # cleaning memory (deleting roads and cars)
+
     clean()
+
+    # spawn roads and cars
+
     add()
     
+
+    # isAlive check for calling endmenu if lifes = 0
+
     if(player.isAlive == False):
         application.pause()
         end_menu = Endmenu(player)

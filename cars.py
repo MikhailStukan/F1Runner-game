@@ -1,5 +1,6 @@
 from ursina import *
 
+# car class inhterited from Sprite class
 
 class Cars(Sprite):
     def __init__(self):
@@ -14,8 +15,15 @@ class Cars(Sprite):
         self.enabled = True
         self.always_on_top = True
 
+    # disable rendering 
+
     def destroy(self):
         self.enabled = False
+
+    def update(self):
+        self.y -= self.speed
+
+# pickup 
 
 class Pickup(Cars):
     def __init__(self, x, y, **kwargs):
@@ -28,9 +36,8 @@ class Pickup(Cars):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    def update(self):
-        self.y -= self.speed
         
+# sedan
 
 class Sedan(Cars):
     def __init__(self, x, y, **kwargs):
@@ -43,8 +50,9 @@ class Sedan(Cars):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    def update(self):
-        self.y -= self.speed
+
+
+# truck
 
 class Truck(Cars):
     def __init__(self, x, y, **kwargs):
@@ -56,6 +64,3 @@ class Truck(Cars):
 
         for key, value in kwargs.items():
             setattr(self, key, value)
-
-    def update(self):
-        self.y -= self.speed
