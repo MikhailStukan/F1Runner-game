@@ -45,25 +45,43 @@ class Player(Sprite):
 
         hit_info = self.intersects()
 
-        if hit_info.hit and hit_info.entity.name == "car":
+        if hit_info.hit:
+            if hit_info.entity.name == "car":
 
-            # handle collision with car and taking damage
+                # handle collision with car and taking damage
 
-            self.take_damage(int(hit_info.entity.health))
+                self.take_damage(int(hit_info.entity.health))
+       
+                # destroying car which was hit
+
+                hit_info.entity.destroy()
+
+                # reduction amount of score for hitting car, that is based on the health of the car
+
+                self.add_score(int(hit_info.entity.health * -1))
+
+            elif hit_info.entity.name == "health_orb":
+
+                # adding life to player
+
+                self.add_life(hit_info.entity.health)
+
+                # destroying health orb
+
+                hit_info.entity.destroy()
             
-            # shake effect on collision, WIP
+            elif hit_info.entity.name == "speed_orb":
+                
+                # increasing speed of player
 
-            self.shake()
+                self.add_speed(hit_info.entity.speed_increase)
 
-            # destroying car which was hit
+                # destroying speed orb
 
-            hit_info.entity.destroy()
+                hit_info.entity.destroy()
 
-            # reduction amount of score for hitting car, that is based on the health of the car
 
-            self.add_score(int(hit_info.entity.health * -1))
-            
-
+ 
 
     # deriving coordinates from the speed and changing x-axis from the turnspeed
     # border on the right and left of the road 
@@ -128,6 +146,11 @@ class Player(Sprite):
             self.disable()
             self.isAlive = False
         
+    def add_speed(self, speed):
+        if self.speed < self.max_speed:
+            self.speed += speed
+        else:
+            self.speed = self.max_speed
 
     # adding x life
 

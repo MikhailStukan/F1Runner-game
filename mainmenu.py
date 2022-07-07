@@ -22,7 +22,7 @@ class MainMenu(Entity):
             
             #getting entered name
             
-            entered_name = enter_name.content[0].text
+            entered_name = enter_name.content[1].text
 
             if(entered_name == ""):
                 entered_name = "Player"
@@ -30,6 +30,7 @@ class MainMenu(Entity):
                 self.player.name = entered_name
             enter_name.enabled = False
             self.main_menu.enabled = True
+            mouse.locked = False
 
 
 
@@ -63,9 +64,11 @@ class MainMenu(Entity):
 
         enter_name = WindowPanel(
             title = 'Enter your name',
-            position = (0, -0.1), # position of the window
+            position = (0, 0.25), # position of the window
             content = (
+                Space(),
                 InputField(name = 'InputName', text = '', placeholder = 'Enter your name'),
+                Space(),
                 Button(text = 'Submit', color = color.azure, on_click = save_name),
         ),
             popup = True,

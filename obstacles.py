@@ -1,4 +1,5 @@
 from ursina import *
+
 # car class inhterited from Sprite class
 
 class Cars(Sprite):
@@ -67,3 +68,41 @@ class Truck(Cars):
 
         for key, value in kwargs.items():
             setattr(self, key, value)
+
+# obstacle class inhterited from Sprite class
+
+class Obstascle(Sprite):
+    def __init__(self, x, y):
+        super().__init__(
+            collider = 'box',
+            name = 'obstacle',
+        )
+        self.model = 'quad',
+        self.x = x
+        self.y = y
+        self.enabled = True
+        self.always_on_top = True
+
+    def destroy(self):  
+        self.enabled = False
+
+# health orb - adding health
+
+class HealthOrb(Obstascle):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.texture = 'resources/sprites/health_orb.png'
+        self.health = 1
+        self.scale = 3.5
+        self.name = 'health_orb'
+    
+# speed orb - adding speed 
+
+class SpeedOrb(Obstascle):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.texture = 'resources/sprites/speed_orb.png'
+        self.speed_increase = 2 
+        self.scale = 3.5
+        self.name = 'speed_orb'
+    
