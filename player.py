@@ -25,13 +25,19 @@ class Player(Sprite):
         self.isAlive = True
         self.always_on_top = True
         self.enabled = False
+        self.engine_sound = Audio('resources/sounds/car_acceleration.wav', loop = True, autoplay = False)
 
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-
-
     # updating player position
+    
+
+    def start_engine(self):
+        self.engine_sound.play()
+
+    def stop_engine(self):
+        self.engine_sound.stop()
 
     def update(self):
         if(self.isAlive):
@@ -79,6 +85,15 @@ class Player(Sprite):
                 # destroying speed orb
 
                 hit_info.entity.destroy()
+            elif hit_info.entity.name == "score_orb":
+
+                # adding score to player
+
+                self.add_score(hit_info.entity.score_increase)
+
+                # destroying score orb
+                
+                hit_info.entity.destroy()
 
 
  
@@ -89,6 +104,7 @@ class Player(Sprite):
     def move(self):
 
         # increasing y coordinate based on speed
+
 
         self.y += self.speed
 

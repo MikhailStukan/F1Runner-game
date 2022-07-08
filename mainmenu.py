@@ -22,16 +22,29 @@ class MainMenu(Entity):
             
             #getting entered name
             
+        
             entered_name = enter_name.content[1].text
 
-            if(entered_name == ""):
-                entered_name = "Player"
+            # checking name for prohibited characters and maximum length
+
+            if(bool(re.match(r'[^a-zA-Z0-9]', entered_name)) == False):
+                if len(entered_name) > 10:
+                    enter_name.content[4].text = "Name is too long"
+                    entered_name = ""
+                elif len(entered_name) < 3:
+                    enter_name.content[4].text = "Name is too short"
+                    entered_name = ""
+                else:
+                    self.player.name = entered_name
+                    close_name_window()
             else:
-                self.player.name = entered_name
+                enter_name.content[4].text = "Name can only contain letters and numbers"
+
+
+        def close_name_window():
             enter_name.enabled = False
             self.main_menu.enabled = True
             mouse.locked = False
-
 
 
 
@@ -53,7 +66,16 @@ class MainMenu(Entity):
             title = 'Leaderboard',
             position = (0, 0.35), # position of the window
             content = (
-              Space(height = 10),
+              Text(name = 'place', text = "", color = color.white, font_size = 20, origin = 0, y = 0.25),
+              Space(),
+              Text(name = 'place', text = "", color = color.white, font_size = 20, origin = 0, y = 0.20),
+              Space(),
+              Text(name = 'place', text = "", color = color.white, font_size = 20, origin = 0, y = 0.15),
+              Space(),
+              Text(name = 'place', text = "", color = color.white, font_size = 20, origin = 0, y = 0.10),
+              Space(),
+              Text(name = 'place', text = "", color = color.white, font_size = 20, origin = 0, y = 0.5),
+              Space(),
               Button(text = 'Exit', color = color.azure, on_click = close_leaderboard),
          ),
             popup = True,
@@ -64,28 +86,24 @@ class MainMenu(Entity):
 
         enter_name = WindowPanel(
             title = 'Enter your name',
-            position = (0, 0.25), # position of the window
+            position = (0, 0.1), # position of the window
             content = (
                 Space(),
                 InputField(name = 'InputName', text = '', placeholder = 'Enter your name'),
                 Space(),
+                Text(name = 'error_text', text = "", color = color.white, font_size = 20),
                 Button(text = 'Submit', color = color.azure, on_click = save_name),
         ),
             popup = True,
             enabled = False
         )
         
-        # leaderboard texts - 5 places for first 5 players
+        # list of leaderboard texts
 
-        self.leaderboard_1 = Text(text = "", color = color.white, font_size = 20, parent = leaderBoard.content, origin = 0, y = 0.25)
-        self.leaderboard_2 = Text(text = "", color = color.white, font_size = 20, parent = leaderBoard.content, origin = 0, y = 0.15)
-        self.leaderboard_3 = Text(text = "", color = color.white, font_size = 20, parent = leaderBoard.content, origin = 0, y = 0.05)
-        self.leaderboard_4 = Text(text = "", color = color.white, font_size = 20, parent = leaderBoard.content, origin = 0, y = -0.05)
-        self.leaderboard_5 = Text(text = "", color = color.white, font_size = 20, parent = leaderBoard.content, origin = 0, y = -0.15)
-        
-        # list of texts
-
-        self.leaderboard_texts = [self.leaderboard_1, self.leaderboard_2, self.leaderboard_3, self.leaderboard_4, self.leaderboard_5]
+        self.leaderboard_texts = []
+        for element in leaderBoard.content:
+            if isinstance(element, Text):
+                self.leaderboard_texts.append(element)
 
 
 
@@ -111,6 +129,7 @@ class MainMenu(Entity):
             self.player.position = (0, 0, 0)
             self.isGameStarted = True
             enter_name.enabled = False
+            self.player.start_engine()
 
 # fill leaderboard_texts with names and scores from dictionary
 
@@ -131,12 +150,7 @@ class MainMenu(Entity):
 # displaying leaderboard
 
         def display_leaderboard():
-           fill_leaderboard(self)
-           self.leaderboard_1.enabled = True
-           self.leaderboard_2.enabled = True
-           self.leaderboard_3.enabled = True
-           self.leaderboard_4.enabled = True      
-           self.leaderboard_5.enabled = True  
+           fill_leaderboard(self)  
            leaderBoard.enabled = True
            self.main_menu.enabled = False
 
@@ -153,24 +167,25 @@ class MainMenu(Entity):
             application.paused = not application.paused
             self.isGameStarted = True
             mouse.locked = True
+            self.player.start_engine()
 
         load_scores(self)
         # if game is not started
         if(self.isGameStarted == False):
-            start_button = Button(text = "Start the race", color = color.black, scale_y = 0.1, scale_x = 0.3, y = 0.02, parent = self.main_menu)
+            start_button = Button(text = "Start the race", color = color.azure, scale_y = 0.1, scale_x = 0.3, y = 0.02, parent = self.main_menu)
             start_button.on_click = Func(start)
             enter_name.enabled = True
         else:
-            resume_button = Button(text = "Resume game", color = color.black, scale_y = 0.1, scale_x = 0.3, y = 0.02, parent = self.main_menu)
+            resume_button = Button(text = "Resume game", color = color.azure, scale_y = 0.1, scale_x = 0.3, y = 0.02, parent = self.main_menu)
             resume_button.on_click = Func(resume)
-            restart_button = Button(text = "Restart game", color = color.black, scale_y = 0.1, scale_x = 0.3, y = 0.15, parent = self.main_menu)
+            restart_button = Button(text = "Restart game", color = color.azure, scale_y = 0.1, scale_x = 0.3, y = 0.15, parent = self.main_menu)
             restart_button.on_click = Func(restart)
 
 
        # drawing buttons for leaderboard and exit
         
-        leader_button = Button(text = "Leaderboard", color = color.black, scale_y = 0.1, scale_x = 0.3, y = -0.1, parent = self.main_menu)
-        quit_button = Button(text = "Quit", color = color.black, scale_y = 0.1, scale_x = 0.3, y = -0.22, parent = self.main_menu)
+        leader_button = Button(text = "Leaderboard", color = color.azure, scale_y = 0.1, scale_x = 0.3, y = -0.1, parent = self.main_menu)
+        quit_button = Button(text = "Quit", color = color.azure, scale_y = 0.1, scale_x = 0.3, y = -0.22, parent = self.main_menu)
         quit_button.on_click = application.quit
         leader_button.on_click = Func(display_leaderboard)
        

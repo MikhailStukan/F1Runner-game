@@ -1,4 +1,3 @@
-from tkinter import RIGHT
 from ursina import *
 
 # Importing components
@@ -21,7 +20,7 @@ window.borderless = False
 window.exit_button.visible = False
 window.fps_counter.enabled = False
 window.vsync = 60
-window.color = color.rgb(0,94,184)
+window.color = color.black
 window.icon = load_texture('resources/sprites/player.png')
 
 # CONSTANTS
@@ -35,12 +34,13 @@ MAX_ORBS = 2
 
 # Sounds
 
-engine_sound = Audio('/resources/sounds/car_starting_idle.wav', loop = False, autoplay= False)
-race_sound = Audio('resources/sounds/car_acceleration.wav', loop = True, autoplay = False)
+start_sound = Audio('/resources/sounds/car_starting_idle.wav', loop = False, autoplay= False)
+
 
 # heart texture
 
 hearth_texture = load_texture('resources/sprites/heart.png')
+road_texture = load_texture('resources/sprites/road_1.png')
 
 #spawning cars
 
@@ -62,7 +62,7 @@ def new_cars(x, ys):
 roads = []
 
 def newRoad(y):
-    new = Sprite(name = "road", model = 'quad', texture = 'resources/sprites/road_0.png', scale = 1.5, x = 0, y = y, z = 0)
+    new = Sprite(name = "road", model = 'quad', texture = road_texture, scale = 1.5, x = 0, y = y, z = 0)
     roads.append(new)
 
 # remove road after coordinates y
@@ -131,11 +131,12 @@ def general_spawn():
 # spawning orbs
 
 def orbs_spawn():
-    distance_to_orb = random.uniform(0,ROADS_LENGTH)
-    if player.y >= roads[-1].y - ROADS_LENGTH - (player.max_speed + player.speed) and len(orbs) < MAX_ORBS:
-        spawn_orbs(random.uniform(LEFT_BOUND, RIGHT_BOUND), roads[-1].y + ROADS_LENGTH + distance_to_orb)
+    if player.y >= roads[-1].y - ROADS_LENGTH - random_distance_to_orb() and len(orbs) < MAX_ORBS:
+        spawn_orbs(random.uniform(LEFT_BOUND, RIGHT_BOUND), roads[-1].y + ROADS_LENGTH + random_distance_to_orb())
 
-
+def random_distance_to_orb():
+        distance_to_orb = random.uniform(ROADS_LENGTH * 2, 30 * ROADS_LENGTH)
+        return distance_to_orb
 
 # Main Menu
 
@@ -157,7 +158,7 @@ score_text = Text(text= "Score: " + str(player.score), size = 0.05, x = -0.85, y
 # if game isn't started, start sound is played
 
 if (player.enabled == False):
-    engine_sound.play()
+    start_sound.play()
 
 # function for displaying hearts according to amount of lifes (player)
 
@@ -172,7 +173,7 @@ def updating_hearts():
 
 def update():
     if(player.enabled == True):
-        engine_sound.pause()
+        start_sound.pause()
 
     #updating hearts
 
@@ -196,7 +197,6 @@ def update():
     general_spawn()
 
     # orb spawn
-
     orbs_spawn()
     
     # isAlive check for calling endmenu if lifes = 0
@@ -204,6 +204,7 @@ def update():
     if(player.isAlive == False):
         application.pause()
         end_menu = Endmenu(player)
+        player.engine_sound.stop()
         mouse.locked = False
 
 # Pause manager
@@ -216,8 +217,9 @@ def pause_handler_input(key):
     if key == "escape" and not application.paused and player.enabled and player.isAlive:
         resumemenu = MainMenu(player, True)
         resumemenu.main_menu.enabled = True
+        player.stop_engine()
         mouse.locked = False
-        engine_sound.pause()
+        start_sound.pause()
         application.pause()
     
 # Assign the input function to the pause handler.
