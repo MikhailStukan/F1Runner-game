@@ -2,11 +2,11 @@
 
 Infinite runner game made with Python and using Ursina game engine.
 
-![alt text](https://i.imgur.com/8w4fZFK.png)
+![alt text](https://i.imgur.com/v0lL6UZ.png)
 
 ## Work in progress, current features:
 
-* player name typing at start
+* customizable player name
 * health system
 * few types of obstacles (cars, orbs) 
 * score counting
