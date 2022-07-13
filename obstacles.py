@@ -1,38 +1,45 @@
-from ursina import *
+""" ursina engine imports. """
+from ursina import Sprite, random
 
-# car class inhterited from Sprite class
+COLL_SOUND_PATH = "/resources/sounds/car_collision.wav"
+H_ORB_SOUND_PATH = "resources/sounds/health_orb.wav"
+S_ORB_SOUND_PATH = None
+C_ORB_SOUND_PATH = None
 
-class Cars(Sprite):
+class Cars(Sprite): # pylint: disable=too-many-instance-attributes
+    """car class inherited from Sprite class"""
     def __init__(self, x , y):
         super().__init__(
             collider = 'box',
             name = 'car',
         )
-        self.model = 'quad',
+        self.model = 'quad'
         self.x = x
         self.y = y
         self.scale = 3.5
         self.enabled = True
+        self.speed = None
         self.always_on_top = True
         self.min_speed = 0.1
         self.max_speed = 0.7
-        self.collision_sound = Audio('resources/sounds/car_collision.wav', loop = False, autoplay = False)
-    # disable rendering 
+        #self.collision_sound = Audio(COLL_SOUND_PATH, loop = False, autoplay = False)
 
     def destroy(self):
-        self.collision_sound.play()
+        """playing collision sound and destroying sprite"""
+        #self.collision_sound.play()
         self.enabled = False
 
     def update(self):
+        """updating car position"""
         self.y -= self.random_speed()
 
     def random_speed(self):
+        """random speed generator"""
         self.speed = random.uniform(self.min_speed, self.max_speed)
         return self.speed
 
-# pickup 
-
 class Pickup(Cars):
+    """Pickup car"""
     def __init__(self, x, y, **kwargs):
         super().__init__(x, y)
         self.x = x
@@ -44,10 +51,8 @@ class Pickup(Cars):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-        
-# sedan
-
 class Sedan(Cars):
+    """Sedan car"""
     def __init__(self, x, y, **kwargs):
         super().__init__(x, y)
         self.texture = 'resources/sprites/sedan_yellow.png'
@@ -57,11 +62,8 @@ class Sedan(Cars):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-
-
-# truck
-
 class Truck(Cars):
+    """Truck car"""
     def __init__(self, x, y, **kwargs):
         super().__init__(x, y)
         self.texture = 'resources/sprites/garbage_truck.png'
@@ -71,52 +73,49 @@ class Truck(Cars):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-# obstacle class inhterited from Sprite class
-
 class Obstascle(Sprite):
+    """Obstacle class"""
     def __init__(self, x, y):
         super().__init__(
             collider = 'box',
             name = 'obstacle',
         )
-        self.model = 'quad',
+        self.model = 'quad'
         self.x = x
         self.y = y
         self.scale = 3
         self.enabled = True
         self.always_on_top = True
-        self.collision_sound = Audio('resources/sounds/default.wav', loop = False, autoplay = False)
+        #self.collision_sound = Audio('resources/sounds/default.wav', loop = False, autoplay = False)
 
-    def destroy(self):  
+    def destroy(self):
+        """playing collision sound and destroying sprite"""
         self.enabled = False
-        self.collision_sound.play()
-
-# health orb - adding health
+        #self.collision_sound.play()
 
 class HealthOrb(Obstascle):
+    """Health orb"""
     def __init__(self, x, y):
         super().__init__(x, y)
         self.texture = 'resources/sprites/health_orb.png'
         self.health = 1
         self.name = 'health_orb'
-        self.collision_sound = Audio('resources/sounds/health_orb.wav', loop = False, autoplay = False)
-    
-# speed orb - adding speed 
+        #self.collision_sound = Audio(H_ORB_SOUND_PATH, loop = False, autoplay = False)
 
 class SpeedOrb(Obstascle):
+    """Speed orb"""
     def __init__(self, x, y):
         super().__init__(x, y)
         self.texture = 'resources/sprites/speed_orb.png'
-        self.speed_increase = 2 
+        self.speed_increase = 2
         self.name = 'speed_orb'
-        self_collision_sound = Audio('resources/sounds/speed_orb.wav', loop = False, autoplay = False)
-    
-# coin - adding score
+        #self_collision_sound = Audio(None, loop = False, autoplay = False)
 
 class CoinOrb(Obstascle):
+    """Coin orb"""
     def __init__(self, x, y):
         super().__init__(x, y)
         self.texture = 'resources/sprites/coin_orb.png'
         self.score_increase = 1
         self.name = 'coin_orb'
-        self.collision_sound = Audio('resources/sounds/coin_orb.wav', loop = False, autoplay = False)
+        #self.collision_sound = Audio(None, loop = False, autoplay = False)
