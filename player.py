@@ -1,13 +1,16 @@
 """ursina imports"""
-from ursina import *
+from ursina import (Audio,
+                    Sprite,
+                    held_keys)
 
 CAR_ACCEL_SOUND_PATH = "resources/sounds/car_acceleration.wav"
 
-class Player(Sprite): # pylint: disable=too-many-instance-attributes
+
+class Player(Sprite):  # pylint: disable=too-many-instance-attributes
     """player class"""
     def __init__(self, **kwargs):
         super().__init__(
-            collider = 'box',
+            collider='box',
         )
         self.max_speed = .5
         self.min_speed = .1
@@ -29,7 +32,8 @@ class Player(Sprite): # pylint: disable=too-many-instance-attributes
         self.is_alive = True
         self.always_on_top = True
         self.enabled = False
-        self.engine_sound = Audio(CAR_ACCEL_SOUND_PATH, loop = True, autoplay = False)
+        self.engine_sound = Audio(CAR_ACCEL_SOUND_PATH,
+                                  loop=True, autoplay=False)
 
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -51,46 +55,36 @@ class Player(Sprite): # pylint: disable=too-many-instance-attributes
             self.disable()
             self.is_alive = False
         hit_info = self.intersects()
-        if hit_info.hit: #colliders
+        if hit_info.hit:
             if hit_info.entity.name == "car":
-                # handle collision with car and taking damage
                 self.take_damage(int(hit_info.entity.health))
-                # destroying car which was hit
                 hit_info.entity.destroy()
-                # reduction amount of score for hitting car, that is based on the health of the car
                 self.add_score(int(hit_info.entity.health * -1))
             elif hit_info.entity.name == "health_orb":
-                # adding life to player
                 self.add_life(hit_info.entity.health)
-                # destroying health orb
                 hit_info.entity.destroy()
             elif hit_info.entity.name == "speed_orb":
-                # increasing speed of player
                 self.add_speed(hit_info.entity.speed_increase)
-                # destroying speed orb
                 hit_info.entity.destroy()
             elif hit_info.entity.name == "score_orb":
-                # adding score to player
                 self.add_score(hit_info.entity.score_increase)
-                # destroying score orb
                 hit_info.entity.destroy()
 
     def move(self):
         """changing player coordinates"""
-        self.y += self.speed # increasing y coordinate based on speed
-        # checking for road width so player doen't go out of the screen
+        self.y += self.speed
         if self.x > self.road_width:
             self.x = self.road_width
         if self.x < -self.road_width:
             self.x = -self.road_width
         else:
-            # handling turning of the player based on the turnspeed
             self.x += held_keys['d'] * self.turnspeed
             self.x += held_keys['right arrow'] * self.turnspeed
             self.x -= held_keys['a'] * self.turnspeed
             self.x -= held_keys['left arrow'] * self.turnspeed
+
     def change_speed(self):
-        """changing speed and turnspeed when the keys are pressed (acceleration) and deceleration"""
+        """changing speed and turnspeed when the keys are pressed"""
         if self.speed < self.max_speed and self.turnspeed < self.max_turnspeed:
             if held_keys['w'] or held_keys['up arrow']:
                 self.speed += self.acceleration

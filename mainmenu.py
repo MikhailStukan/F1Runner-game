@@ -1,20 +1,31 @@
 """ursina imports"""
-from ursina import * # pylint: disable=unused-wildcard-import,wildcard-import,redefined-builtin
+from ursina import (Button,
+                    Entity,
+                    Func,
+                    InputField,
+                    Space,
+                    Text,
+                    WindowPanel,
+                    application,
+                    camera,
+                    color,
+                    mouse,
+                    re)
 
 SCORE_FILE_PATH = "scores.txt"
 ENCODING = "utf-8"
+
 
 class MainMenu(Entity):
     """ main menu class """
     def __init__(self, player, is_game_started):
         super().__init__(
-            parent = camera.ui)
+            parent=camera.ui)
         self.player = player
-        self.main_menu = Entity(parent = self, enabled = False)
+        self.main_menu = Entity(parent=self, enabled=False)
         self.is_game_started = is_game_started
         self.leaderboard_texts = []
         self.scores = {}
-
 
         def close_name_window():
             """ closing name window """
@@ -36,20 +47,22 @@ class MainMenu(Entity):
                     self.player.name = entered_name
                     close_name_window()
             else:
-                enter_name.content[4].text = "Name can only contain letters and numbers"
+                enter_name.content[4].text = "Only letters or numbers"
 
         enter_name = WindowPanel(
-            title = 'Enter your name',
-            position = (0, 0.1), # position of the window
-            content = (
+            title='Enter your name',
+            position=(0, 0.1),  # position of the window
+            content=(
                 Space(),
-                InputField(name = 'InputName', text = '', placeholder = 'Enter your name'),
+                InputField(name='InputName', text='',
+                           placeholder='Enter your name'),
                 Space(),
-                Text(name = 'error_text', text = "", color = color.white, font_size = 20),
-                Button(text = 'Submit', color = color.azure, on_click = save_name),
-        ),
-            popup = True,
-            enabled = False
+                Text(name='error_text', text="",
+                     color=color.white, font_size=20),
+                Button(text='Submit', color=color.azure, on_click=save_name)
+                ),
+            popup=True,
+            enabled=False
         )
 
         def close_leaderboard():
@@ -59,28 +72,28 @@ class MainMenu(Entity):
             mouse.locked = False
 
         leader_board = WindowPanel(
-            title = 'Leaderboard',
-            position = (0, 0.35), # position of the window
-            content = (
-              Text(name = 'place', text = "", color = color.white,
-                font_size = 20, origin = 0, y = 0.25),
+            title='Leaderboard',
+            position=(0, 0.35),  # position of the window
+            content=(
+              Text(name='place', text="", color=color.white,
+                   font_size=20, origin=0, y=0.25),
               Space(),
-              Text(name = 'place', text = "", color = color.white,
-                font_size = 20, origin = 0, y = 0.20),
+              Text(name='place', text="", color=color.white,
+                   font_size=20, origin=0, y=0.20),
               Space(),
-              Text(name = 'place', text = "", color = color.white,
-                font_size = 20, origin = 0, y = 0.15),
+              Text(name='place', text="", color=color.white,
+                   font_size=20, origin=0, y=0.15),
               Space(),
-              Text(name = 'place', text = "", color = color.white,
-                font_size = 20, origin = 0, y = 0.10),
+              Text(name='place', text="", color=color.white,
+                   font_size=20, origin=0, y=0.10),
               Space(),
-              Text(name = 'place', text = "", color = color.white,
-                font_size = 20, origin = 0, y = 0.5),
+              Text(name='place', text="", color=color.white,
+                   font_size=20, origin=0, y=0.05),
               Space(),
-              Button(text = 'Exit', color = color.azure, on_click = close_leaderboard),
-         ),
-            popup = True,
-            enabled = False
+              Button(text='Exit', color=color.azure,
+                     on_click=close_leaderboard)),
+            popup=True,
+            enabled=False
         )
 
         def fill_leaderboads_texts():
@@ -111,13 +124,15 @@ class MainMenu(Entity):
 
         def fill_leaderboard():
             """ filling leaderboard with scores from dict """
-            sorted_dict = sorted(self.scores.items(), key=lambda item: item[1], reverse = True)
+            sorted_dict = sorted(self.scores.items(),
+                                 key=lambda item: item[1], reverse=True)
             if len(sorted_dict) >= 5:
                 top_5 = sorted_dict[:5]
             else:
                 top_5 = sorted_dict
-            for index, (name, score) in enumerate(top_5):
-                self.leaderboard_texts[index].text = "Name: " + name + " Score: " + str(score)
+            for idx, (name, score) in enumerate(top_5):
+                self.leaderboard_texts[idx].text = ("Name: " + name +
+                                                    " Score: " + str(score))
 
         def display_leaderboard():
             """display leaderboard"""
@@ -142,21 +157,26 @@ class MainMenu(Entity):
         fill_leaderboads_texts()
 
         if self.is_game_started is False:
-            start_button = Button(text = "Start the race", color = color.azure,
-                scale_y = 0.1, scale_x = 0.3, y = 0.02, parent = self.main_menu)
+            start_button = Button(text="Start the race", color=color.azure,
+                                  scale_y=0.1, scale_x=0.3, y=0.02,
+                                  parent=self.main_menu)
             start_button.on_click = Func(start)
             enter_name.enabled = True
         else:
-            resume_button = Button(text = "Resume game", color = color.azure, 
-                scale_y = 0.1, scale_x = 0.3, y = 0.02, parent = self.main_menu)
+            resume_button = Button(text="Resume game", color=color.azure,
+                                   scale_y=0.1, scale_x=0.3, y=0.02,
+                                   parent=self.main_menu)
             resume_button.on_click = Func(resume)
-            restart_button = Button(text = "Restart game", color = color.azure,
-                scale_y = 0.1, scale_x = 0.3, y = 0.15, parent = self.main_menu)
+            restart_button = Button(text="Restart game", color=color.azure,
+                                    scale_y=0.1, scale_x=0.3, y=0.15,
+                                    parent=self.main_menu)
             restart_button.on_click = Func(restart)
 
-        leader_button = Button(text = "Leaderboard", color = color.azure,
-            scale_y = 0.1, scale_x = 0.3, y = -0.1, parent = self.main_menu)
-        quit_button = Button(text = "Quit", color = color.azure,
-            scale_y = 0.1, scale_x = 0.3, y = -0.22, parent = self.main_menu)
+        leader_button = Button(text="Leaderboard", color=color.azure,
+                               scale_y=0.1, scale_x=0.3, y=-0.1,
+                               parent=self.main_menu)
+        quit_button = Button(text="Quit", color=color.azure,
+                             scale_y=0.1, scale_x=0.3, y=-0.22,
+                             parent=self.main_menu)
         quit_button.on_click = application.quit
         leader_button.on_click = Func(display_leaderboard)
