@@ -17,20 +17,26 @@ from endmenu import Endmenu  # pylint: disable=import-error
 
 app = Ursina()
 
-window.title = "F1Runner"
-camera.orthographic = True
-mouse.locked = False
-camera.fov = 50
-window.fullscreen = False
-window.borderless = False
-window.exit_button.visible = False
-window.fps_counter.enabled = True
-window.vsync = 60
+
+def setup_window():
+    """setup window"""
+    window.title = "F1Runner"
+    camera.orthographic = True
+    mouse.locked = False
+    camera.fov = 50
+    window.fullscreen = False
+    window.borderless = False
+    window.exit_button.visible = False
+    window.fps_counter.enabled = False
+    window.vsync = 60
+
+
+setup_window()
 
 ROADS_LENGTH = 28.7
 LEFT_BOUND = -5.5
 RIGHT_BOUND = 5.5
-MAX_CARS = 20
+MAX_CARS = 30
 MAX_ORBS = 2
 INITIAL_AMOUNT_ROADS = 4
 INITIAL_Y = -20
@@ -182,7 +188,7 @@ if player.enabled is False:
 def updating_hearts():
     """updating hearts"""
     if player.life != player.maxlife:
-        for i in range(player.life):
+        for i in range(player.life + 1, player.maxlife):
             hearts[i].visible = True
         for i in range(player.life, player.maxlife):
             hearts[i].visible = False
