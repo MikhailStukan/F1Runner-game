@@ -6,7 +6,6 @@ from ursina import (Audio,
                     Ursina,
                     application,
                     camera,
-                    color,
                     load_texture,
                     mouse,
                     window,
@@ -27,7 +26,6 @@ window.borderless = False
 window.exit_button.visible = False
 window.fps_counter.enabled = True
 window.vsync = 60
-window.color = color.black
 
 ROADS_LENGTH = 28.7
 LEFT_BOUND = -5.5
@@ -36,11 +34,17 @@ MAX_CARS = 20
 MAX_ORBS = 2
 INITIAL_AMOUNT_ROADS = 4
 INITIAL_Y = -20
-CAMERA_OFFSET = 15
+CAMERA_OFFSET = 5
 HEART_TEXTURE = load_texture('resources/sprites/heart.png')
 ROAD_TEXTURE = load_texture('resources/sprites/road_1.png')
+GRASS_L = load_texture('resources/sprites/grass_left.png')
+GRASS_R = load_texture('resources/sprites/grass_right.png')
 START_SOUND = Audio('/resources/sounds/car_starting_idle.wav', loop=False, autoplay=False)
 
+roads = []
+grass = []
+orbs = []
+hearts = []
 cars = []
 
 
@@ -55,7 +59,14 @@ def new_cars(x_coord, y_coord):
     cars.append(new)
 
 
-roads = []
+def new_grass(y_coord):
+    """spawn grass"""
+    new = Sprite(name="grass", model='quad',
+                 texture=GRASS_L, scale=1.5, x=-5.5, y=y_coord, z=0)
+    grass.append(new)
+    new = Sprite(name="grass", model='quad',
+                 texture=GRASS_R, scale=1.5, x=5.5, y=y_coord, z=0)
+    grass.append(new)
 
 
 def new_road(y):
@@ -92,7 +103,13 @@ def remove_orb(y_coord):
             break
 
 
-orbs = []
+def remove_grass(y_coord):
+    """remove grass"""
+    iter_grass = grass
+    for gras in iter_grass:
+        if gras.y <= y_coord:
+            grass.remove(gras)
+            break
 
 
 def spawn_orbs(x_coord, y_coord):
@@ -106,7 +123,7 @@ def spawn_orbs(x_coord, y_coord):
 
 
 def initial_spawn(roads_amount):
-    """create initial road sprites"""
+    """create initial road & grass sprites"""
     for _ in range(0, roads_amount):
         spawn_y = INITIAL_Y
         new_road(spawn_y)
@@ -133,6 +150,7 @@ def general_spawn():
         new_road(roads[-1].y + ROADS_LENGTH)
         if len(cars) < MAX_CARS:
             new_cars(random.uniform(LEFT_BOUND, RIGHT_BOUND), roads[-1].y + ROADS_LENGTH)
+            new_grass(roads[-1].y + ROADS_LENGTH)
             player.score += 1
 
 
@@ -147,9 +165,6 @@ def random_distance_to_orb():
     """random distance to orb"""
     distance_to_orb = random.uniform(ROADS_LENGTH * 2, 30 * ROADS_LENGTH)
     return distance_to_orb
-
-
-hearts = []
 
 
 def spawn_hearts():
@@ -175,10 +190,8 @@ def updating_hearts():
 
 def create_texts():
     """creating speed and score texts"""
-    speed = Text(text="Speed: " + str(int(player.speed * 200)) + "km/h",
-                 size=0.05, x=(-0.85), y=0.30)
-    score = Text(text="Score: " + str(player.score), size=0.05, x=(-0.85),
-                 y=0.20)
+    speed = Text(size=0.05, x=(-0.85), y=0.30)
+    score = Text(size=0.05, x=(-0.85), y=0.20)
     return speed, score
 
 
@@ -194,7 +207,7 @@ def move_camera(offset_y):
 
 def updating_texts():
     """updating texts"""
-    speed_text.text = "Speed: " + str(int(player.speed * 200)) + "km/h"
+    speed_text.text = "Speed: " + str(int(player.speed * 350)) + "km/h"
     score_text.text = "Score: " + str(player.score)
 
 

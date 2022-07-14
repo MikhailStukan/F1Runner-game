@@ -2,7 +2,7 @@
 
 Infinite runner game made with Python and using Ursina game engine.
 
-![alt text](https://i.imgur.com/v0lL6UZ.png)
+![alt text](https://i.imgur.com/eFaS6dz.png)
 
 ## Work in progress, current features:
 
